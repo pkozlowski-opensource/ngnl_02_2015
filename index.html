@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Going global with AngularJS applications</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/simple.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+        <script src="lib/js/angular.js"></script>
+        <script src="lib/js/angular-locale_nl-nl.js"></script>
+        <script>
+            angular.module('app', ['ngLocale'])
+                    .controller('FiltersCtrl', function($scope) {
+                        $scope.now = new Date();
+                    })
+        </script>
+	</head>
+
+	<body ng-app="app">
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+                <section>
+                    <img src="img/logo.png" alt=""/>
+                    <p><small>NG-NL, February 13, 2015 - Amsterdam</small></p>
+                    <aside class="notes">
+                        Ok, shell we start? OK!
+                    </aside>
+                </section>
+
+				<section>
+					<h1>Going global</h1>
+					<h3>with AngularJS applications</h3>
+                    <p><small>NG-NL, February 13, 2015 - Amsterdam</small></p>
+					<p>
+						<small><a href="https://github.com/pkozlowski-opensource">Pawel Kozlowski</a> / <a href="https://twitter.com/pkozlowski_os">@pkozlowski_os</a></small>
+					</p>
+                    <aside class="notes">
+                        So, it looks like globalization is the last obstacle on our way to lunch! Let's tackle the topic quickly then so we can enjoy great food!
+                    </aside>
+				</section>
+
+                <section>
+                    <h2>I'm Pawel</h2>
+                    <h4>I'm into climbing and open-source</h4>
+                    <img src="img/gravatar.jpeg" style="border-radius: 50%"/><br/>
+                    <a href="https://github.com/pkozlowski-opensource">GH: pkozlowski-opensource</a> / <a href="https://twitter.com/pkozlowski_os">@pkozlowski_os</a>
+                    <aside class="notes">
+                        Before starting let me introduce myself: my name is Pawel Kozlowski, I'm the open source addict and core member of AngularJS.
+                        As you can see from my gravatar I'm into climbing and other outdoor activities.
+
+                        You can find my contact details here, feel free to drop my an e-mail if you've got any questions after this presentation or follow me on Twitter
+                        if you are into this kind of things.
+                    </aside>
+                </section>
+
+                <section>
+                    <h2>What does it mean to go global?</h2>
+                    <img src="img/world-map.jpg" style="width: 80%"/>
+                    <aside class="notes">
+                        So what does it mean to prepare an application for the global audience?
+
+                        When we think about this, translating content is the first thing that comes to peoples' mind.
+                        But there is much more to internationalization than this:
+                        - transaltion of common names (week, month names)
+                        - data formatting (dates, numbers, currency)
+                        - input handling
+                        - gender / plularization
+                        - left to right / right to left text
+                        - images / other locale-specific files
+
+                        What I would like to do today is to walk you through elements of AngularJS that support globalization efforts in the current version,
+                        as well as efforts in the 1.4 time-frame to make things even simpler.
+                    </aside>
+                </section>
+
+                <section>
+                    <h2>i18n / i10n</h2>
+                    <blockquote class="fragment" cite="http://en.wikipedia.org/wiki/Internationalization_and_localization">
+                        &ldquo;<strong>Internationalization (i18n)</strong> is the process of designing a software application so that it can potentially be adapted to various languages and regions without engineering changes.&rdquo;
+                    </blockquote>
+                    <blockquote class="fragment" cite="http://en.wikipedia.org/wiki/Internationalization_and_localization">
+                        &ldquo;<strong>Localization (i10n)</strong> is the process of adapting internationalized software for a specific region or language by adding locale-specific components and translating text.&rdquo;
+                    </blockquote>
+                    <aside class="notes">
+                        Before diving into the details let's set our vocabluary straight. When speaking about internationalization we often here i18n / i10n.
+                        What does it mean?
+                        After Wikipedia we can read that internationalization is... while localization is...
+                        Both a moutfull so people abreviate it...
+                        In short: i18n is infrastructure while i10n is using this infrastructure to prepare locale-specific version
+                        We are going to talk about both i18n and i10, but focusing mostly on i18n
+                    </aside>
+                </section>
+
+                <section>
+                    <h1>Today</h1>
+                    <h3>there is <i>some</i> stuff in the core...</h3>
+                    <aside class="notes">
+                        Let's start by quick refresher on what exists in the AngularJS 1.3 today. If you did a lot of localization work
+                        with AngularJS this is the moment when you can doze off, check your e-mail, tweet etc.
+                    </aside>
+                </section>
+
+                <section>
+                    <h2>Locale-specific data</h2>
+                    <h4>Date and number formats, names of days, months etc.</h4>
+                    <ul>
+                        <li>Available in the <a href="https://code.angularjs.org/1.3.12/i18n/" target="_blank">i18n sub-folder</a></li>
+                        <li>Data source: <a href="http://cldr.unicode.org/" target="_blank">CLDR</a></li>
+                        <li>Extracted from the <a href="https://github.com/google/closure-library/tree/master/closure/goog/i18n">closure library</a></li>
+                        <li>Generated "on demand"</li>
+                    </ul>
+                    <aside class="notes">
+                        First of all, AngularJS distribution comes packed with locale-specific data in the i18n sub-folder.
+                        Let's examine one of such files....
+
+                        Continue with the bullet points...
+                    </aside>
+                </section>
+
+                <section>
+                    <h2>Locale-specific data usage</h2>
+                    <pre><code ng-non-bindable style="font-size: 0.73em">
+&lt;script src="lib/js/angular-locale_nl-nl.js"&gt;&lt;/script&gt;
+&lt;script>
+    angular.module('app', ['ngLocale'])
+    ...
+&lt;/script&gt;
+                    </code></pre>
+                    <aside class="notes">
+                        This is how one would use on of the locale files. This is as simple as including the appropriate locale
+                        file and declaring dependency on the "ngLocale" module.
+
+                        Please note that with this setup there no "official" support for switching locales on the fly,
+                        although many people do this in practice using more or less obscure hacks.
+
+                        Another note: you would probably want to generate the inital landing HTML page on the server-side
+                        to detect the locale and include an appropriate file.
+                    </aside>
+                </section>
+
+                <section ng-controller="FiltersCtrl">
+                    <h2>Formatting dates</h2>
+                    <div>
+                        <pre><code ng-non-bindable style="text-align: center" class="html">
+{{now | date:'fullDate'}}
+                        </code></pre>
+                        {{now | date:'fullDate'}}
+                    </div>
+                    <aside class="notes"></aside>
+                </section>
+
+                <section>
+                    <h2>Formatting numbers</h2>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+{{1213123.2454 | number}}
+                        </code></pre>
+                        <code>{{1213123.2454 | number}}</code>
+                    </div>
+                    <aside class="notes"></aside>
+                </section>
+
+                <section>
+                    <h2>Formatting currency</h2>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+{{1213123.2454 | currency}}
+                        </code></pre>
+                        <code>{{1213123.2454 | currency}}</code>
+                    </div>
+                    <h3 class="fragment" style="color: red">Insanity warning!</h3>
+                    <aside class="notes"></aside>
+                </section>
+
+                <section>
+                    <h2>Pluralization</h2>
+                    <pre><code class="html" ng-non-bindable style="text-align: left">
+&lt;ng-pluralize count="personCount"
+    when="{'0': 'Nobody is viewing.',
+           'one': '1 person is viewing.',
+           'other': '{} people are viewing.'}"&gt;
+&lt;/ng-pluralize&gt;
+                    </code></pre>
+                    <aside class="notes">
+                        Not strictly linked to localization, but wanted to briefly mention ngPluralize
+                        which is a fancy switch statement that understand certain format.
+
+                        The link to the localization here is that we would like to be able to translate those fancy formats.
+                    </aside>
+                </section>
+
+                <section>
+                    <h1>Today</h1>
+                    <h4>the community needs to work out several pieces</h4>
+                    <h4>mainly translations...</h4>
+                    <aside class="notes">
+                        Well, this is all that exists in the core itself, and as you can see there is nothing about translations.
+                        So it is not surprising that the community had to fill in this hole.
+                    </aside>
+                </section>
+
+
+                <section>
+                    <h2>"Run-time" translations</h2>
+                    <h4>with angular-translate or similar</h4>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1&gt;{{ 'TITLE' | translate }}&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <div class="fragment">
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1 translate="TITLE"&gt;&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <div class="fragment">
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1&gt;{{:: 'TITLE' | translate }}&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <aside class="notes">
+                        Plus: easy to use and understand, run-time switching of locales
+                        Minus: verbose and some perf issues, somehow mitigated by the one-time bindings
+                    </aside>
+                </section>
+
+                <section>
+                    <h2>"Build-time" translations</h2>
+                    <img src="img/hands-waving.jpg" />
+                    <aside class="notes">
+                        Once again, AngularJS has distinct performance characteristics where performance is correlated with number of watchers on the page
+                        Translations would add one watch for every translated string which is pretty bad so some people are pre-generating template set during build-time
+                        This is a solution recommended by Google
+                        But the problem is that one needs to roll out its own proprietarty solutions and there are not much details on how to do things in practice
+                        When people speak about their solution it is often if the hand-waywing manner
+                    </aside>
+                </section>
+
+                <section>
+                    <h1>Tomorrow</h1>
+                    <h4>Let's imagine a better World together!</h4>
+                </section>
+
+                <section>
+                    <h2>There are few problems to solve</h2>
+                    <ul>
+                        <li>Build-time solutions are cumbersome to setup and operate</li>
+                        <li>Run-time solutions suffer from some perf-problems</li>
+                        <li>It's a lot of work!</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>I18n add <i>tons</i> of work</h2>
+                    <h4>especially if done as the afterthought</h4>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1&gt;Some title&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1&gt;{{ 'TITLE' | translate }}&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <ul class="fragment">
+                        <li>Extracting and <i>naming</i> messages to translate</li>
+                        <li>Modifying templates</li>
+                        <li>Sending things over to translation</li>
+                        <li>Converting translated messages to the app's format</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>There is ongoing work</h2>
+                    <h4>in 1.4/2.0 time-frame</h4>
+                    <div style="max-height: 80%">
+                        <img src="img/chirayu.jpg" style="border-radius: 50%; transform: scale(0.9)" /><br>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Let's be (very) lazy!</h2>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1&gt;{{ 'TITLE' | translate }}&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <div class="fragment">
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1 i18n&gt;Some tilte&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <div class="fragment">
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1&gt;Some tilte&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Benefits</h2>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: center">
+&lt;h1 i18n&gt;Some tilte&lt;/h1&gt;
+                        </code></pre>
+                    </div>
+                    <ul>
+                        <li>Easy to introduce translations <i>later</i></li>
+                        <li>No thinking about message names!</li>
+                        <li>Meaningful previews</li>
+                        <li>More context for translators</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Let's be nice to translators</h2>
+                    <div>
+                        <pre><code class="html" ng-non-bindable style="text-align: left">
+&lt;h1 i18n="This is document's title"&gt;
+    Some title
+&lt;/h1&gt;
+</code></pre>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Not only syntax</h2>
+                    <h4>but rather the entire process!</h4>
+                    <img src="img/IMG_20150212_171503_picmonkeyed.jpg" alt=""/>
+                </section>
+
+                <section>
+                    <h2>Let's do it together, please!</h2>
+                    <br>
+                    <ul>
+                        <li>Things a cooking in the <a href="https://github.com/angular/i18n" target="_blank">angular/i18n repo</a></li>
+                        <li>You can read more in the <a href="https://drive.google.com/folderview?id=0B8aAcQMyRhIWQUxyOXBDeHRPcTg" target="_blank">design docs</a></li>
+                        <li>All the previous meetings were <a href="https://www.youtube.com/watch?v=x2s3T1BhZUY" target="_blank">recorded</a></li>
+                        <li>There is enough work for everyone (and more)</li>
+                        <li>We are inclusive and happy to chat!</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>More details to come</h2>
+                    <img src="img/ngconf%2520banner%25202015.png" alt=""/>
+                </section>
+
+                <section>
+                    <h1>Dat is alles!</h1>
+                    <h3>Thnx for having me!</h3>
+                </section>
+
+                <section>
+                    <h1>Q & A</h1>
+                </section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
